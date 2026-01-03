@@ -31,18 +31,18 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install tofu-docs
+      - name: Install terraform-docs
         run: |
           cd /tmp
-          curl -sSLo ./tofu-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/v0.18.0/terraform-docs-v0.18.0-$(uname)-amd64.tar.gz
-          tar -xzf tofu-docs.tar.gz
+          curl -sSLo ./terraform-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/v0.18.0/terraform-docs-v0.18.0-$(uname)-amd64.tar.gz
+          tar -xzf terraform-docs.tar.gz
           chmod +x terraform-docs
-          sudo mv terraform-docs /usr/local/bin/tofu-docs
-          tofu-docs --version
+          sudo mv terraform-docs /usr/local/bin/terraform-docs
+          terraform-docs --version
 
       - name: Generate OpenTofu docs
         run: |
-          tofu-docs markdown table . --output-file README.md --output-mode inject
+          terraform-docs markdown table . --output-file README.md --output-mode inject
 
       - name: Check for changes
         id: verify-changes
