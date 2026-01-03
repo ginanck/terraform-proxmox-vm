@@ -88,14 +88,12 @@ jobs:
             echo "No changes detected"
           fi
 
-      - name: Commit and push changes
+      # Fail the workflow if changes are needed (don't auto-commit)
+      - name: Fail if changes are needed
         if: steps.verify-changed-files.outputs.changes == 'true' && github.event_name == 'push'
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "chore: auto-update documentation and formatting [skip ci]"
-          git push
+          echo "❌ Pre-commit hooks made changes. Please run 'pre-commit run --all-files' locally and commit the changes."
+          exit 1
 
       - name: Comment on PR with changes
         if: steps.verify-changed-files.outputs.changes == 'true' && github.event_name == 'pull_request'
