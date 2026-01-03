@@ -19,7 +19,7 @@ jobs:
   pre-commit:
     name: Run Pre-commit Hooks
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

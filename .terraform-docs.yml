@@ -73,7 +73,7 @@ content: |-
         memory_dedicated = 8192
         disk_size        = 100
         tags             = ["windows", "server"]
-        
+
         # Windows-specific settings
         bios           = "ovmf"
         disk_interface = "sata0"

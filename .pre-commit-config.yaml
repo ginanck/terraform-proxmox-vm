@@ -18,7 +18,7 @@ repos:
       # ==================== DOCUMENTATION HOOKS ====================
       - id: tofu-docs
         name: Generate OpenTofu Docs
-        entry: tofu-docs markdown table . --output-file README.md --output-mode inject
+        entry: terraform-docs markdown table . --output-file README.md --output-mode inject
         language: system
         pass_filenames: false
         files: \.(tf|tfvars)$
