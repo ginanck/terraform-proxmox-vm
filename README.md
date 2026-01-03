@@ -18,15 +18,115 @@ This module creates and manages Proxmox VMs using the Proxmox provider.
 This module is designed to be used with Terragrunt. See the `examples/` directory for usage examples.
 
 <!-- BEGIN_TF_DOCS -->
+# Proxmox VM Terraform Module
+
+This module creates and manages Proxmox VMs using the Proxmox provider.
+
+## Features
+
+- Full VM lifecycle management
+- Windows and Linux support
+- WinRM provisioning for Windows VMs
+- Cloud-init support
+- Multiple disk support
+- Multiple network interface support
+- Configurable CPU, memory, and storage
+- Template cloning
+- Flexible configuration via Terragrunt
+- Multi-VM deployment
+
+## Usage
+
+### Basic Example (Linux VM)
+
+```hcl
+module "linux_vm" {
+  source = "git::https://github.com/ginanck/terraform-proxmox-vm.git?ref=master"
+
+  vms = {
+    web-server = {
+      vm_id       = 100
+      name        = "web-server-01"
+      ip_address  = "192.168.1.100/24"
+      cpu_cores   = 2
+      memory_dedicated = 4096
+      disk_size   = 50
+      tags        = ["web", "production"]
+    }
+  }
+
+  clone_vm_id      = 8000  # Linux template
+  network_bridge   = "vmbr0"
+  init_gateway     = "192.168.1.1"
+  init_dns_servers = ["8.8.8.8", "8.8.4.4"]
+}
+```
+
+### Windows VM Example
+
+```hcl
+module "windows_vm" {
+  source = "git::https://github.com/ginanck/terraform-proxmox-vm.git?ref=master"
+
+  vms = {
+    windows-server = {
+      vm_id            = 200
+      name             = "win-server-01"
+      ip_address       = "192.168.1.200/24"
+      cpu_cores        = 4
+      memory_dedicated = 8192
+      disk_size        = 100
+      tags             = ["windows", "server"]
+
+      # Windows-specific settings
+      bios           = "ovmf"
+      disk_interface = "sata0"
+      is_windows     = true
+      force_update   = false
+      init_username  = "Administrator"
+      init_password  = "SecurePassword123!"
+    }
+  }
+
+  clone_vm_id      = 7902  # Windows template
+  network_bridge   = "vmbr0"
+  init_gateway     = "192.168.1.1"
+  init_dns_servers = ["192.168.1.1"]
+  is_windows       = true
+}
+```
+
+### Terragrunt Example
+
+See the [examples directory](https://github.com/ginanck/terraform-proxmox-vm/tree/master/examples) for complete Terragrunt configurations.
+
+## Windows Support
+
+For Windows VMs, the module includes:
+- Automatic WinRM availability checks
+- PowerShell-based disk management provisioners
+- Configurable WinRM connection parameters
+
+### Windows Requirements:
+1. Template must have Cloudbase-Init installed
+2. WinRM enabled on port 5985
+3. OVMF BIOS configured
+4. SATA disk interface
+
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | 3.2.4 |
+| <a name="requirement_proxmox"></a> [proxmox](#requirement\_proxmox) | 0.85.1 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | n/a |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.2.4 |
+| <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | 0.85.1 |
 
 ## Modules
 
@@ -36,7 +136,9 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [proxmox_virtual_environment_vm.vm](https://registry.terraform.io/providers/hashicorp/proxmox/latest/docs/resources/virtual_environment_vm) | resource |
+| [null_resource.configure_disks](https://registry.terraform.io/providers/hashicorp/null/3.2.4/docs/resources/resource) | resource |
+| [null_resource.wait_for_winrm](https://registry.terraform.io/providers/hashicorp/null/3.2.4/docs/resources/resource) | resource |
+| [proxmox_virtual_environment_vm.vm](https://registry.terraform.io/providers/bpg/proxmox/0.85.1/docs/resources/virtual_environment_vm) | resource |
 
 ## Inputs
 
@@ -70,6 +172,7 @@ No modules.
 | <a name="input_disk_replicate"></a> [disk\_replicate](#input\_disk\_replicate) | Enable replication | `bool` | `false` | no |
 | <a name="input_disk_size"></a> [disk\_size](#input\_disk\_size) | Primary disk size in GB | `number` | `20` | no |
 | <a name="input_disk_ssd"></a> [disk\_ssd](#input\_disk\_ssd) | Mark disk as SSD | `bool` | `false` | no |
+| <a name="input_force_update"></a> [force\_update](#input\_force\_update) | Run post-initialization tasks when true (default=false). Set to true for subsequent applies to execute post-init provisioners. | `bool` | `false` | no |
 | <a name="input_init_datastore_id"></a> [init\_datastore\_id](#input\_init\_datastore\_id) | Datastore ID for cloud-init drive | `string` | `"data"` | no |
 | <a name="input_init_dns_servers"></a> [init\_dns\_servers](#input\_init\_dns\_servers) | List of DNS servers | `list(string)` | <pre>[<br/>  "8.8.8.8",<br/>  "8.8.4.4"<br/>]</pre> | no |
 | <a name="input_init_gateway"></a> [init\_gateway](#input\_init\_gateway) | Default gateway IP address | `string` | n/a | yes |
@@ -78,6 +181,7 @@ No modules.
 | <a name="input_init_password"></a> [init\_password](#input\_init\_password) | Default user account password | `string` | `"dummy"` | no |
 | <a name="input_init_ssh_keys"></a> [init\_ssh\_keys](#input\_init\_ssh\_keys) | List of SSH public keys for default user | `list(string)` | `[]` | no |
 | <a name="input_init_username"></a> [init\_username](#input\_init\_username) | Default user account username | `string` | `"dummy"` | no |
+| <a name="input_is_windows"></a> [is\_windows](#input\_is\_windows) | Set to true if the VM is Windows; false for Linux | `bool` | `false` | no |
 | <a name="input_keyboard_layout"></a> [keyboard\_layout](#input\_keyboard\_layout) | Keyboard layout | `string` | `"en-us"` | no |
 | <a name="input_memory_dedicated"></a> [memory\_dedicated](#input\_memory\_dedicated) | Dedicated memory in MB | `number` | `2048` | no |
 | <a name="input_memory_floating"></a> [memory\_floating](#input\_memory\_floating) | Floating memory in MB | `number` | `0` | no |
@@ -118,6 +222,10 @@ No modules.
 | <a name="input_timeout_stop_vm"></a> [timeout\_stop\_vm](#input\_timeout\_stop\_vm) | Timeout for stop operations (seconds) | `number` | `300` | no |
 | <a name="input_vm_id"></a> [vm\_id](#input\_vm\_id) | VM ID (must be unique across the Proxmox cluster) | `number` | `110` | no |
 | <a name="input_vms"></a> [vms](#input\_vms) | Map of VM configurations. Each key is a unique identifier for the VM. | `map(any)` | `{}` | no |
+| <a name="input_winrm_max_attempts"></a> [winrm\_max\_attempts](#input\_winrm\_max\_attempts) | Maximum number of WinRM connectivity check attempts before failing | `number` | `60` | no |
+| <a name="input_winrm_retry_delay"></a> [winrm\_retry\_delay](#input\_winrm\_retry\_delay) | Seconds to wait between WinRM connectivity check attempts | `number` | `10` | no |
+| <a name="input_winrm_settle_time"></a> [winrm\_settle\_time](#input\_winrm\_settle\_time) | Seconds to wait after WinRM responds before running provisioners | `number` | `30` | no |
+| <a name="input_winrm_timeout"></a> [winrm\_timeout](#input\_winrm\_timeout) | Timeout for WinRM connection attempts | `string` | `"10m"` | no |
 
 ## Outputs
 
