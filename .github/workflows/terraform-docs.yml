@@ -1,0 +1,75 @@
+name: Generate OpenTofu Docs
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '**.tf'
+      - '**.tfvars'
+      - '.terraform-docs.yml'
+  pull_request:
+    paths:
+      - '**.tf'
+      - '**.tfvars'
+      - '.terraform-docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  tofu-docs:
+    name: Update OpenTofu Documentation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install tofu-docs
+        run: |
+          cd /tmp
+          curl -sSLo ./tofu-docs.tar.gz https://github.com/terraform-docs/terraform-docs/releases/download/v0.18.0/terraform-docs-v0.18.0-$(uname)-amd64.tar.gz
+          tar -xzf tofu-docs.tar.gz
+          chmod +x terraform-docs
+          sudo mv terraform-docs /usr/local/bin/tofu-docs
+          tofu-docs --version
+
+      - name: Generate OpenTofu docs
+        run: |
+          tofu-docs markdown table . --output-file README.md --output-mode inject
+
+      - name: Check for changes
+        id: verify-changes
+        run: |
+          if [[ $(git status --porcelain) ]]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.verify-changes.outputs.changes == 'true' && github.event_name == 'push'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          git commit -m "docs: auto-update OpenTofu documentation [skip ci]"
+          git push
+
+      - name: Comment on PR
+        if: steps.verify-changes.outputs.changes == 'true' && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '📝 **OpenTofu documentation has been updated**\n\nPlease review the changes to README.md.'
+            })
