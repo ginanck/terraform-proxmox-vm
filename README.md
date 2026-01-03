@@ -221,7 +221,7 @@ No modules.
 | <a name="input_timeout_start_vm"></a> [timeout\_start\_vm](#input\_timeout\_start\_vm) | Timeout for start operations (seconds) | `number` | `1800` | no |
 | <a name="input_timeout_stop_vm"></a> [timeout\_stop\_vm](#input\_timeout\_stop\_vm) | Timeout for stop operations (seconds) | `number` | `300` | no |
 | <a name="input_vm_id"></a> [vm\_id](#input\_vm\_id) | VM ID (must be unique across the Proxmox cluster) | `number` | `110` | no |
-| <a name="input_vms"></a> [vms](#input\_vms) | Map of VM configurations. Each key is a unique identifier for the VM. | `map(any)` | `{}` | no |
+| <a name="input_vms"></a> [vms](#input\_vms) | Map of VM configurations. Each key is a unique identifier for the VM. | `any` | `{}` | no |
 | <a name="input_winrm_max_attempts"></a> [winrm\_max\_attempts](#input\_winrm\_max\_attempts) | Maximum number of WinRM connectivity check attempts before failing | `number` | `60` | no |
 | <a name="input_winrm_retry_delay"></a> [winrm\_retry\_delay](#input\_winrm\_retry\_delay) | Seconds to wait between WinRM connectivity check attempts | `number` | `10` | no |
 | <a name="input_winrm_settle_time"></a> [winrm\_settle\_time](#input\_winrm\_settle\_time) | Seconds to wait after WinRM responds before running provisioners | `number` | `30` | no |
