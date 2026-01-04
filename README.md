@@ -229,7 +229,5 @@ No modules.
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_vm_details"></a> [vm\_details](#output\_vm\_details) | Complete VM details summary |
+No outputs.
 <!-- END_TF_DOCS -->
