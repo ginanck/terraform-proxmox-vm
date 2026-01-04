@@ -119,7 +119,7 @@ For Windows VMs, the module includes:
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | 3.2.4 |
-| <a name="requirement_proxmox"></a> [proxmox](#requirement\_proxmox) | 0.85.1 |
+| <a name="requirement_proxmox"></a> [proxmox](#requirement\_proxmox) | 0.90.0 |
 
 ## Providers
 
@@ -138,7 +138,7 @@ No modules.
 |------|------|
 | [null_resource.configure_disks](https://registry.terraform.io/providers/hashicorp/null/3.2.4/docs/resources/resource) | resource |
 | [null_resource.wait_for_winrm](https://registry.terraform.io/providers/hashicorp/null/3.2.4/docs/resources/resource) | resource |
-| [proxmox_virtual_environment_vm.vm](https://registry.terraform.io/providers/bpg/proxmox/0.85.1/docs/resources/virtual_environment_vm) | resource |
+| [proxmox_virtual_environment_vm.vm](https://registry.terraform.io/providers/bpg/proxmox/0.90.0/docs/resources/virtual_environment_vm) | resource |
 
 ## Inputs
 
