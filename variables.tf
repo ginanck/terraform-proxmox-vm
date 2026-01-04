@@ -25,7 +25,7 @@ variable "proxmox_api_token" {
 
 variable "vms" {
   description = "Map of VM configurations. Each key is a unique identifier for the VM."
-  type        = map(any)
+  type        = any
   default     = {}
 }
 
