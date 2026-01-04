@@ -126,7 +126,7 @@ For Windows VMs, the module includes:
 | Name | Version |
 |------|---------|
 | <a name="provider_null"></a> [null](#provider\_null) | 3.2.4 |
-| <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | 0.85.1 |
+| <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | 0.90.0 |
 
 ## Modules
 
