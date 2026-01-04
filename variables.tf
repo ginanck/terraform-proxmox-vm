@@ -134,7 +134,7 @@ variable "started" {
 variable "stop_on_destroy" {
   description = "Stop VM before destroying"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "tablet_device" {
@@ -173,13 +173,13 @@ variable "scsi_hardware" {
 variable "timeout_clone" {
   description = "Timeout for clone operations (seconds)"
   type        = number
-  default     = 1800
+  default     = 60
 }
 
 variable "timeout_create" {
   description = "Timeout for create operations (seconds)"
   type        = number
-  default     = 1800
+  default     = 60
 }
 
 variable "timeout_migrate" {
@@ -197,19 +197,19 @@ variable "timeout_reboot" {
 variable "timeout_shutdown_vm" {
   description = "Timeout for shutdown operations (seconds)"
   type        = number
-  default     = 1800
+  default     = 60
 }
 
 variable "timeout_start_vm" {
   description = "Timeout for start operations (seconds)"
   type        = number
-  default     = 1800
+  default     = 60
 }
 
 variable "timeout_stop_vm" {
   description = "Timeout for stop operations (seconds)"
   type        = number
-  default     = 300
+  default     = 60
 }
 
 # =============================================================================
